@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title></title>
+</head>
+
+<body>
+  
+</body>
+
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>OMEGA: SPHERE PROTOCOL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;900&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --neon: #0ff; --pink: #f0f; --gold: #ffcc00; --dark: #020002; --glass: rgba(0, 255, 255, 0.1); }
+        body { margin: 0; overflow: hidden; background: var(--dark); font-family: 'Rajdhani', sans-serif; touch-action: none; color: white; }
+        
+        /* OMEGA BRANDING & MENUS */
+        #menu, #over, #shop { 
+            position: fixed; inset: 0; background: radial-gradient(circle at center, #0a0015, #000); 
+            z-index: 100; display: flex; flex-direction: column; align-items: center; justify-content: center; 
+        }
+        h1 { font-family: 'Orbitron', sans-serif; font-size: clamp(40px, 15vw, 80px); margin: 0; letter-spacing: 20px; color: var(--neon); text-shadow: 0 0 30px var(--neon); font-weight: 900; }
+        .sub { font-size: 12px; letter-spacing: 10px; color: var(--pink); margin-bottom: 40px; opacity: 0.8; }
+        
+        /* BEST UI: HUD */
+        #ui { position: fixed; top: 20px; left: 20px; right: 20px; z-index: 10; display:none; display: flex; justify-content: space-between; pointer-events: none; }
+        .hud-group { display: flex; gap: 15px; }
+        .hud-box { 
+            background: var(--glass); border-bottom: 2px solid var(--neon); padding: 5px 15px; 
+            backdrop-filter: blur(10px); min-width: 80px;
+        }
+        .hud-label { font-size: 10px; letter-spacing: 2px; color: var(--neon); font-weight: bold; }
+        .hud-val { font-family: 'Orbitron', sans-serif; font-size: 20px; }
+
+        /* SHOP UI */
+        #shop { display: none; z-index: 110; background: rgba(0,0,0,0.95); }
+        .shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; width: 90%; max-width: 400px; margin: 20px 0; }
+        .shop-item { 
+            background: var(--glass); border: 1px solid #333; padding: 15px; text-align: center; 
+            cursor: pointer; transition: 0.3s;
+        }
+        .shop-item:hover { border-color: var(--neon); background: rgba(0,255,255,0.2); }
+        .item-name { font-weight: bold; font-size: 16px; margin-bottom: 5px; display: block; }
+        .item-cost { color: var(--gold); font-family: 'Orbitron'; font-size: 12px; }
+
+        /* BUTTONS */
+        .btn { 
+            padding: 15px 40px; font-size: 16px; background: transparent; 
+            border: 1px solid var(--neon); color: var(--neon); cursor: pointer; 
+            transition: 0.3s; font-weight: 900; font-family: 'Orbitron';
+            text-transform: uppercase; letter-spacing: 4px; margin: 5px;
+        }
+        .btn:hover { background: var(--neon); color: #000; box-shadow: 0 0 30px var(--neon); }
+        .btn-pink { border-color: var(--pink); color: var(--pink); }
+        .btn-pink:hover { background: var(--pink); color: #000; box-shadow: 0 0 30px var(--pink); }
+
+        #over { display: none; z-index: 200; }
+    </style>
+</head>
+<body>
+
+<div id="menu">
+    <h1>OMEGA</h1>
+    <div class="sub">NEURAL PROTOCOL</div>
+    <div style="margin-bottom: 20px;">
+        <span id="globalCredits" style="color:var(--gold); font-family:'Orbitron'">0000</span> <span style="font-size:10px">CR</span>
+    </div>
+    <button class="btn" onclick="startGame()">Start Link</button>
+    <button class="btn btn-pink" onclick="toggleShop(true)">Neural Shop</button>
+</div>
+
+<div id="shop">
+    <h2 style="font-family:'Orbitron'; letter-spacing:5px;">NEURAL SHOP</h2>
+    <div class="shop-grid">
+        <div class="shop-item" onclick="buyItem('shield', 50)">
+            <span class="item-name">Shield Core</span>
+            <span class="item-cost">50 CR</span>
+        </div>
+        <div class="shop-item" onclick="buyItem('magnet', 100)">
+            <span class="item-name">Hyper Magnet</span>
+            <span class="item-cost">100 CR</span>
+        </div>
+        <div class="shop-item" onclick="buyItem('mult', 150)">
+            <span class="item-name">2x Multiplier</span>
+            <span class="item-cost">150 CR</span>
+        </div>
+        <div class="shop-item" onclick="buyItem('ghost', 200)">
+            <span class="item-name">Ghost Phase</span>
+            <span class="item-cost">200 CR</span>
+        </div>
+    </div>
+    <button class="btn" onclick="toggleShop(false)">Back</button>
+</div>
+
+<div id="ui">
+    <div class="hud-group">
+        <div class="hud-box"><div class="hud-label">PHASE</div><div class="hud-val" id="level">1</div></div>
+        <div class="hud-box"><div class="hud-label">UNITS</div><div class="hud-val" id="score">0</div></div>
+    </div>
+    <div class="hud-box" style="border-color:var(--gold)">
+        <div class="hud-label" style="color:var(--gold)">CREDITS</div>
+        <div class="hud-val" id="coins" style="color:var(--gold)">0</div>
+    </div>
+</div>
+
+<div id="over">
+    <h2 style="color:var(--pink); font-family:'Orbitron'; letter-spacing:5px;">LINK SEVERED</h2>
+    <div id="finalStat" style="font-family:'Orbitron'; margin: 20px 0; text-align:center"></div>
+    <button class="btn" onclick="location.reload()">Re-Sync</button>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.158/build/three.min.js"></script>
+<script>
+let scene, camera, renderer, player, clock;
+let alive = false, score = 0, coins = 0, level = 1, speed = 0.75, targetX = 0;
+let totalCredits = parseInt(localStorage.getItem('omega_credits')) || 0;
+let enemies = [], roadSegments = [], stars = [], coinPickups = [];
+let vy = 0, activeShield = false;
+
+document.getElementById('globalCredits').innerText = totalCredits.toString().padStart(4, '0');
+
+function toggleShop(show) {
+    document.getElementById('shop').style.display = show ? 'flex' : 'none';
+}
+
+function buyItem(id, cost) {
+    if(totalCredits >= cost) {
+        totalCredits -= cost;
+        localStorage.setItem('omega_credits', totalCredits);
+        document.getElementById('globalCredits').innerText = totalCredits.toString().padStart(4, '0');
+        if(id === 'shield') activeShield = true;
+        alert(id.toUpperCase() + " ACTIVATED FOR NEXT RUN!");
+    } else {
+        alert("INSUFFICIENT CREDITS");
+    }
+}
+
+function startGame() {
+    document.getElementById('menu').style.display = 'none';
+    document.getElementById('ui').style.display = 'flex';
+    alive = true;
+    init();
+}
+
+function init() {
+    scene = new THREE.Scene();
+    scene.fog = new THREE.Fog(0x020002, 10, 120);
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+    camera.position.set(0, 4, 10);
+    renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+    clock = new THREE.Clock();
+
+    // Player
+    const sphereGeo = new THREE.SphereGeometry(0.7, 32, 32);
+    const sphereMat = new THREE.MeshStandardMaterial({ color: 0x00ffff, emissive: 0x00ffff, emissiveIntensity: 2 });
+    player = new THREE.Mesh(sphereGeo, sphereMat);
+    player.position.y = 0.7;
+    scene.add(player);
+
+    if(activeShield) {
+        const sGeo = new THREE.SphereGeometry(1.2, 16, 16);
+        const sMat = new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.2, wireframe: true });
+        player.add(new THREE.Mesh(sGeo, sMat));
+    }
+  
+    scene.add(new THREE.AmbientLight(0x404040));
+    player.add(new THREE.PointLight(0x00ffff, 20, 30));
+
+    // Stars
+    const starGeo = new THREE.BufferGeometry();
+    const starCoords = [];
+    for(let i=0; i<1000; i++) starCoords.push((Math.random()-0.5)*150, (Math.random()-0.5)*100, -Math.random()*250);
+    starGeo.setAttribute('position', new THREE.Float32BufferAttribute(starCoords, 3));
+    stars = new THREE.Points(starGeo, new THREE.PointsMaterial({ color: 0xffffff, size: 0.1 }));
+    scene.add(stars);
+  
+    createRoad();
+    spawnEnemies();
+    spawnCoins();
+    setupControls();
+    animate();
+}
+
+function createRoad() {
+    for(let i=0; i<3; i++) {
+        const seg = new THREE.GridHelper(40, 10, 0x00ffff, 0x110022);
+        seg.position.z = -i * 100;
+        scene.add(seg);
+        roadSegments.push(seg);
+    }
+}
+
+function spawnEnemies() {
+    for(let i=0; i<8; i++) {
+        const e = new THREE.Mesh(new THREE.IcosahedronGeometry(1.2), new THREE.MeshStandardMaterial({ color: 0xff0044, emissive: 0xff0000 }));
+        e.position.set((Math.floor(Math.random()*3)-1)*8, 1, -60 - (i*30));
+        scene.add(e);
+        enemies.push(e);
+    }
+}
+
+function spawnCoins() {
+    for(let i=0; i<6; i++) {
+        const c = new THREE.Mesh(new THREE.TorusGeometry(0.5, 0.1), new THREE.MeshStandardMaterial({ color: 0xffcc00, emissive: 0xffaa00 }));
+        c.position.set((Math.floor(Math.random()*3)-1)*8, 1, -40 - (i*40));
+        scene.add(c);
+        coinPickups.push(c);
+    }
+}
+
+function setupControls() {
+    const laneWidth = 8;
+    window.addEventListener('keydown', e => {
+        if(e.key === "ArrowLeft") targetX = Math.max(-laneWidth, targetX - laneWidth);
+        if(e.key === "ArrowRight") targetX = Math.min(laneWidth, targetX + laneWidth);
+        if(e.key === "ArrowUp" && player.position.y <= 0.8) vy = 0.3;
+    });
+    let ts;
+    window.addEventListener('touchstart', e => ts = e.touches[0].clientX);
+    window.addEventListener('touchend', e => {
+        let diff = ts - e.changedTouches[0].clientX;
+        if(Math.abs(diff) > 30) targetX = diff > 0 ? Math.max(-laneWidth, targetX - laneWidth) : Math.min(laneWidth, targetX + laneWidth);
+        else if(player.position.y <= 0.8) vy = 0.3;
+    });
+}
+
+function animate() {
+    if(!alive) return;
+    requestAnimationFrame(animate);
+    const time = clock.getElapsedTime();
+
+    player.position.x = THREE.MathUtils.lerp(player.position.x, targetX, 0.15);
+    player.rotation.x -= speed * 0.2;
+    player.position.y += vy;
+    if(player.position.y > 0.7) vy -= 0.015; else { player.position.y = 0.7; vy = 0; }
+  
+    stars.position.z += speed * 5;
+    if(stars.position.z > 200) stars.position.z = 0;
+    roadSegments.forEach(r => { r.position.z += speed; if(r.position.z > 100) r.position.z -= 300; });
+  
+    enemies.forEach(e => {
+        e.position.z += speed;
+        if(e.position.distanceTo(player.position) < 1.8) {
+            if(activeShield) {
+                activeShield = false;
+                player.remove(player.children[1]); // Remove shield mesh
+                e.position.z = -250;
+            } else {
+                alive = false;
+                totalCredits += coins;
+                localStorage.setItem('omega_credits', totalCredits);
+                document.getElementById('over').style.display = 'flex';
+                document.getElementById('finalStat').innerText = `SCORE: ${score}\nEARNED: ${coins} CR`;
+            }
+        }
+        if(e.position.z > 20) { e.position.z = -200; e.position.x = (Math.floor(Math.random()*3)-1)*8; }
+    });
+
+    coinPickups.forEach(c => {
+        c.position.z += speed;
+        c.rotation.y = time * 3;
+        if(c.position.distanceTo(player.position) < 1.5) {
+            coins += 1;
+            c.position.z = -200;
+            c.position.x = (Math.floor(Math.random()*3)-1)*8;
+        }
+        if(c.position.z > 20) { c.position.z = -200; c.position.x = (Math.floor(Math.random()*3)-1)*8; }
+    });
+  
+    score++;
+    document.getElementById('score').innerText = score;
+    document.getElementById('coins').innerText = coins;
+    document.getElementById('level').innerText = Math.floor(score/1000) + 1;
+    
+    camera.position.x = player.position.x * 0.2;
+    camera.lookAt(player.position.x, 1, -5);
+    renderer.render(scene, camera);
+}
+</script>
+</body>
+</html>
